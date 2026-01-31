@@ -20,12 +20,14 @@ jobs:
       
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+        working-directory: 记帐鸭/WasteBook-master
       
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
+        working-directory: 记帐鸭/WasteBook-master
         
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: WasteBook-Debug
-          path: app/build/outputs/apk/debug/*.apk
+          path: 记帐鸭/WasteBook-master/app/build/outputs/apk/debug/*.apk
