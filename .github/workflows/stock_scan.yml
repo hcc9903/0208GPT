@@ -1,0 +1,40 @@
+name: Stock Scanner Auto Run
+
+on:
+  schedule:
+    - cron: '0 9 * * 1-5' # 每天北京时间 17:00 运行 (UTC 9:00)
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: '目标分析日期 (YYYYMMDD)'
+        required: false
+        default: '20260203'
+
+jobs:
+  run-scanner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Install Dependencies
+        run: uv pip install . --system
+
+      - name: Run Stock Scanner
+        env:
+          TARGET_DATE: ${{ github.event.inputs.target_date || '20260203' }}
+        run: python add.py
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: stock-results-${{ github.event.inputs.target_date || '20260203' }}
+          path: results_*.csv
